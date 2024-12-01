@@ -1,0 +1,104 @@
+let INPUT_FILE = 'input.dat';
+
+let content = File.read(INPUT_FILE);
+let content_lines = content.split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+let TYPES = [
+  50: "Five of a kind",
+  40: "Four of a kind",
+  32: "Full house",
+  30: "Three of a kind",
+  22: "Two pair",
+  20: "One pair",
+  10: "High card"
+];
+
+
+func label_to_number(cards, part_two=false) {
+  let result = [];
+  for i in cards {
+    if i == 'T' {
+      result.append(10);
+    }
+    elif i == 'J' {
+      if part_two {
+        result.append(1);
+      }
+      else {
+        result.append(11);
+      }
+    }
+    elif i == 'Q' {
+      result.append(12);
+    }
+    elif i == 'K' {
+      result.append(13);
+    }
+    elif i == 'A' {
+      result.append(14);
+    }
+    else {
+      result.append(i.to_int());
+    }
+  }
+  return result;
+}
+
+func get_score(cards, part_two=false) {
+  let counter = [:];
+
+  let jokers = 0;
+  if part_two {
+    jokers = cards.count('J');
+    cards = cards.filter(func (card) {
+      return card != "J";
+    });
+  }
+
+  for card in cards {
+    counter[card] = cards.count(card);
+  }
+
+  let sorted_values = counter.values().sort().reverse().append_all([0] * 5).slice(0, 2);
+  let max = sorted_values[0];
+  let second = sorted_values[1];
+
+  let rank_score = 10 * (max + jokers) + second;
+  let max_i = 1;
+  for i in TYPES.keys() {
+    if i <= rank_score {
+      if i > max_i {
+        max_i = i;
+      }
+    }
+  }
+  rank_score = max_i;
+
+  return [rank_score, TYPES[rank_score]];
+}
+
+
+let part_one_hands = [];
+let part_two_hands = [];
+for line in content_lines {
+  let hand = line.split(' ');
+  part_one_hands.append([label_to_number(hand[0]), hand[1].to_int(), get_score(hand[0])]);
+  part_two_hands.append([label_to_number(hand[0], true), hand[1].to_int(), get_score(hand[0], true)]);
+}
+part_one_hands.sort(func (hand) {
+  return [hand[2], hand[0]];
+});
+part_two_hands.sort(func (hand) {
+  return [hand[2], hand[0]];
+});
+let part_one_sum = 0;
+let part_two_sum = 0;
+for i in Range.new(1, part_one_hands.len() + 1) {
+  part_one_sum += i * part_one_hands[i - 1][1];
+}
+for i in Range.new(1, part_two_hands.len() + 1) {
+  part_two_sum += i * part_two_hands[i - 1][1];
+}
+print("Part One: " + part_one_sum);
+print("Part Two: " + part_two_sum);

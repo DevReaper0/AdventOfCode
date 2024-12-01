@@ -1,0 +1,62 @@
+let INPUT_FILE = 'input.dat';
+
+let PART_ONE_LOADED = [
+  'red': 12,
+  'green': 13,
+  'blue': 14
+];
+
+let content_lines = File.read(INPUT_FILE).split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+
+let part_one_sum = 0;
+let part_two_sum = 0;
+for line in content_lines {
+  let id = line.split(': ')[0].split('Game ')[1].to_int();
+  let set_texts = line.split(': ')[1].split('; ');
+  let sets = [];
+  for set_text in set_texts {
+    let set = [
+      'red': 0,
+      'green': 0,
+      'blue': 0
+    ];
+    for card in set_text.split(', ') {
+      let color = card.split(' ')[1];
+      set[color] = card.split(' ')[0].to_int();
+    }
+    sets.append(set);
+  }
+
+
+  let valid = true;
+  for set in sets {
+    for color in set.keys() {
+      if set[color] > PART_ONE_LOADED[color] {
+        valid = false;
+      }
+    }
+  }
+  if valid {
+    part_one_sum += id;
+  }
+
+
+  let minimum_numbers = [
+    'red': 0,
+    'green': 0,
+    'blue': 0
+  ];
+  for set in sets {
+    for color in set.keys() {
+      if set[color] > minimum_numbers[color] {
+        minimum_numbers[color] = set[color];
+      }
+    }
+  }
+  let product = minimum_numbers['red'] * minimum_numbers['green'] * minimum_numbers['blue'];
+  part_two_sum += product;
+}
+print("Part One: " + part_one_sum);
+print("Part Two: " + part_two_sum);

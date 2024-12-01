@@ -1,0 +1,55 @@
+import "std/regex.para";
+
+let INPUT_FILE = 'input.dat';
+
+let PART_TWO_REPLACEMENTS = [
+  "one": "1",
+  "two": "2",
+  "three": "3",
+  "four": "4",
+  "five": "5",
+  "six": "6",
+  "seven": "7",
+  "eight": "8",
+  "nine": "9"
+];
+let PART_TWO_PATTERN = '|'.join(PART_TWO_REPLACEMENTS.keys());
+
+let content_lines = File.read(INPUT_FILE).split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+
+let part_one_calibration_values = [];
+for line in content_lines {
+  let numbers = regex.sub("[^0-9]", "", line);
+  if numbers.len() > 0 {
+    part_one_calibration_values.append(numbers[0] + numbers[numbers.len() - 1]);
+  }
+}
+
+let part_one_sum = 0;
+for value in part_one_calibration_values {
+  part_one_sum += value.to_int();
+}
+print("Part One: " + part_one_sum);
+
+
+let part_two_calibration_values = [];
+for line in content_lines {
+  let l = line;
+  let i = 0;
+  let found = regex.findall(PART_TWO_PATTERN, l);
+  while found.len() > 0 {
+    let f = found[i];
+    l = l.replace(f, PART_TWO_REPLACEMENTS[f] + f[f.len() - 1], 1);
+    found = regex.findall(PART_TWO_PATTERN, l);
+  }
+  let numbers = regex.sub("[^0-9]", "", l);
+  part_two_calibration_values.append(numbers[0] + numbers[numbers.len() - 1]);
+}
+
+let part_two_sum = 0;
+for value in part_two_calibration_values {
+  part_two_sum += value.to_int();
+}
+print("Part Two: " + part_two_sum);

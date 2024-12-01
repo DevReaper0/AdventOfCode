@@ -1,0 +1,45 @@
+let INPUT_FILE = 'input.dat';
+
+let content_lines = File.read(INPUT_FILE).split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+
+let part_one_sum = 0;
+let part_two_sum = 0;
+
+let copies = [:];
+
+for i in Range.new(0, content_lines.len()) {
+  part_two_sum += 1;
+  let new_copies = [:];
+
+  let line = content_lines[i];
+  let winning = line.replace('  ', ' ').split(': ')[1].split(' | ')[0].split(' ');
+  let current = line.replace('  ', ' ').split(': ')[1].split(' | ')[1].split(' ');
+  let matching = winning & current;
+
+  if matching.len() > 0 {
+    part_one_sum += math.pow(2, matching.len() - 1);
+  }
+  for j in Range.new(0, matching.len()) {
+    new_copies[i + 1 + j] = 1;
+  }
+  for pair in new_copies {
+    if !copies.contains(pair[0]) {
+      copies[pair[0]] = 0;
+    }
+    copies[pair[0]] += pair[1];
+  }
+  if copies.contains(i) && copies[i] > 0 {
+    for pair in new_copies {
+      if !copies.contains(pair[0]) {
+        copies[pair[0]] = 0;
+      }
+      copies[pair[0]] += pair[1] * copies[i];
+    }
+    part_two_sum += copies[i];
+    copies[i] = 0;
+  }
+}
+print("Part One: " + part_one_sum);
+print("Part Two: " + part_two_sum);

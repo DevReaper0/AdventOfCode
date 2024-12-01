@@ -1,0 +1,103 @@
+let INPUT_FILE = 'input.dat';
+
+let content = File.read(INPUT_FILE);
+let content_lines = content.split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+
+let seeds = content_lines[0].split(': ')[1].split(' ').map(func (val) {
+  return val.to_int();
+});
+let maps = [];
+for i in "\n".join(content_lines.from(2)).split('\n\n') {
+  let current_map = [];
+  for n in i.split('\n').from(1) {
+    current_map.append(n.split(' ').map(func (val) {
+      return val.to_int();
+    }));
+  }
+  maps.append(current_map);
+}
+
+
+let part_one_locations = [];
+for curr in seeds {
+  for map in maps {
+    for item in map {
+      let dest = item[0];
+      let src = item[1];
+      let rng = item[2];
+      if src <= curr && curr < src + rng {
+        let idx = curr - src;
+        curr = dest + idx;
+        break;
+      }
+    }
+  }
+  part_one_locations.append(curr);
+}
+print("Part One: " + part_one_locations.min());
+
+
+let part_two_locations = [];
+let seed_pairs = [];
+for i in Range.new(0, seeds.len(), 2) {
+  seed_pairs.append([seeds[i], seeds[i] + seeds[i + 1] - 1]);
+}
+for pair in seed_pairs {
+  let remain = [pair];
+  let result = [];
+
+  for map in maps {
+    while remain.len() > 0 {
+      let curr = remain.pop(remain.len() - 1); // curr = x - y
+      let iterated = false;
+      for item in map {
+        iterated = true;
+
+        let dest = item[0];
+        let src = item[1];
+        let rng = item[2];
+        if curr[1] < src || src + rng <= curr[0] { // no overlap, x-y-a-b or a-b-x-y
+          continue;
+        }
+        elif src <= curr[0] && curr[0] <= curr[1] && curr[1] < src + rng { // a-x-y-b
+          let offset = curr[0] - src;
+          result.append([dest + offset, dest + offset + curr[1] - curr[0]]);
+          break;
+        }
+        elif curr[0] < src && src <= curr[1] && curr[1] < src + rng { // x-a-y-b
+          let offset = curr[1] - src;
+          result.append([dest, dest + offset]);
+          remain.append([curr[0], src - 1]);
+          break;
+        }
+        elif src <= curr[0] && curr[0] < src + rng && src + rng <= curr[1] { // a-x-b-y
+          let offset = curr[0] - src;
+          result.append([dest + offset, dest + rng - 1]);
+          remain.append([src + rng, curr[1]]);
+          break;
+        }
+        elif curr[0] < src && src <= src + rng && src + rng <= curr[1] { // x-a-b-y
+          result.append([dest, dest + rng - 1]);
+          remain.append([curr[0], src - 1]);
+          remain.append([src + rng, curr[1]]);
+          break;
+        }
+      }
+      if !iterated {
+        result.append(curr);
+      }
+    }
+    remain = result;
+    result = [];
+  }
+  part_two_locations.append_all(remain);
+}
+let smallest = part_two_locations[0][0];
+for location in part_two_locations {
+  if location[0] < smallest {
+    smallest = location[0];
+  }
+}
+print("Part Two: " + smallest);

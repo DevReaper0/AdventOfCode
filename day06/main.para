@@ -1,0 +1,52 @@
+import "std/regex.para";
+
+let INPUT_FILE = 'input.dat';
+
+let content = File.read(INPUT_FILE);
+let content_lines = content.split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+
+let first_line =  regex.split("\\s+", content_lines[0]);
+first_line.pop(0);
+let race_times = first_line.map(func (val) {
+  return val.to_int();
+});
+
+let second_line = regex.split("\\s+", content_lines[1]);
+second_line.pop(0);
+let race_distances = second_line.map(func (val) {
+  return val.to_int();
+});
+
+let part_two_time = ''.join(first_line).to_int();
+let part_two_distance = ''.join(second_line).to_int();
+
+
+let counts = [];
+for i in Range.new(race_times.len()) {
+  let time = race_times[i];
+  let distance = race_distances[i];
+  let sum = 0;
+  for t in Range.new(time) {
+    if t * (time - t) > distance {
+      sum += 1;
+    }
+  }
+  counts.append(sum);
+}
+print("Day One: " + math.prod(counts));
+
+let curr = part_two_time ** 2 / 4;
+let diff = curr - part_two_distance;
+let steps = diff ** 0.5;
+if part_two_time % 2 {
+  while steps ** 2 + steps >= diff {
+    steps -= 1;
+  }
+}
+let part_two_count = steps * 2 + 1;
+if part_two_time % 2 {
+  part_two_count += 1;
+}
+print("Day Two: " + part_two_count);

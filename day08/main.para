@@ -1,0 +1,83 @@
+let INPUT_FILE = 'input.dat';
+
+let content = File.read(INPUT_FILE);
+let content_lines = content.split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+
+let instructions = content_lines[0];
+let paths = [:];
+
+for i in Range.new(2, content_lines.len()) {
+  let parts = content_lines[i].split(' ');
+  let key = parts[0];
+  let value = [parts[2].slice(1, 4), parts[3].slice(0, 3)];
+  paths[key] = value;
+}
+
+
+if paths.contains('AAA') {
+  let part_one = 0;
+
+  let i = 0;
+  let current = 'AAA';
+  while current != 'ZZZ' {
+    if i >= instructions.len() {
+      i = 0;
+    }
+
+    let path = paths[current];
+    if instructions[i] == 'L' {
+      current = path[0];
+    } else {
+      current = path[1];
+    }
+    part_one += 1;
+
+    i += 1;
+  }
+
+  print("Part One: " + part_one);
+}
+
+
+if true {
+  let current = [];
+  for node in paths.keys() {
+    if node.endswith('A') {
+      current.append(node);
+    }
+  }
+  let i = 0;
+  let steps = 0;
+
+  let least_steps = [0] * current.len();
+
+  while least_steps.contains(0) {
+    if i >= instructions.len() {
+      i = 0;
+    }
+
+    for j in Range.new(0, current.len()) {
+      let node = current[j];
+      if node.endswith('Z') && least_steps[j] == 0 {
+        least_steps[j] = steps;
+      }
+    }
+
+    let new_current = [];
+    for node in current {
+      if instructions[i] == 'L' {
+        new_current.append(paths[node][0]);
+      } else {
+        new_current.append(paths[node][1]);
+      }
+    }
+    current = new_current;
+    steps += 1;
+
+    i += 1;
+  }
+
+  print("Part Two: " + math.lcm(*least_steps));
+}

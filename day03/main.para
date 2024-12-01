@@ -1,0 +1,175 @@
+let INPUT_FILE = 'input.dat';
+
+let content_lines = File.read(INPUT_FILE).split('\n');
+content_lines.pop(content_lines.len() - 1);
+
+
+let part_one_sum = 0;
+let part_two_sum = 0;
+let used_coords = [];
+for i in Range.new(0, content_lines.len()) {
+  let line = content_lines[i];
+
+  for j in Range.new(0, line.len()) {
+    if line[j] != '.' && !line[j].is_numeric() {
+      let values = [];
+
+      if j > 0 {
+        if true {
+          // Left
+          let k = j;
+          let n = "";
+          while k > 0 && line[k - 1].is_numeric() {
+            n = line[k - 1] + n;
+            k -= 1;
+          }
+          if k != j && !used_coords.contains([i, k]) {
+            part_one_sum += n.to_int();
+            used_coords.append([i, k]);
+            if line[j] == '*' {
+              values.append(n.to_int());
+            }
+          }
+        }
+
+        if i > 0 && content_lines[i - 1][j - 1].is_numeric() {
+          // Up-left
+          let k = j;
+          let n = "";
+          while k < content_lines[i - 1].len() && content_lines[i - 1][k].is_numeric() {
+            k += 1;
+          }
+          while k > 0 && content_lines[i - 1][k - 1].is_numeric() {
+            n = content_lines[i - 1][k - 1] + n;
+            k -= 1;
+          }
+          if k != j && !used_coords.contains([i - 1, k]) {
+            part_one_sum += n.to_int();
+            used_coords.append([i - 1, k]);
+            if line[j] == '*' {
+              values.append(n.to_int());
+            }
+          }
+        }
+
+        if i < content_lines.len() - 1 {
+          // Down-left
+          let k = j;
+          let n = "";
+          while k < content_lines[i + 1].len() && content_lines[i + 1][k].is_numeric() {
+            k += 1;
+          }
+          while k > 0 && content_lines[i + 1][k - 1].is_numeric() {
+            n = content_lines[i + 1][k - 1] + n;
+            k -= 1;
+          }
+          if k != j && !used_coords.contains([i + 1, k]) {
+            part_one_sum += n.to_int();
+            used_coords.append([i + 1, k]);
+            if line[j] == '*' {
+              values.append(n.to_int());
+            }
+          }
+        }
+      }
+
+      if j < line.len() - 1 {
+        if true {
+          // Right
+          let k = j;
+          let n = "";
+          let start = k;
+          while k < line.len() - 1 && line[k + 1].is_numeric() {
+            n += line[k + 1];
+            k += 1;
+          }
+          if k != j && !used_coords.contains([i, start]) {
+            part_one_sum += n.to_int();
+            used_coords.append([i, start]);
+            if line[j] == '*' {
+              values.append(n.to_int());
+            }
+          }
+        }
+
+        if i > 0 {
+          // Up-right
+          let k = j;
+          let n = "";
+          while k > 0 && content_lines[i - 1][k].is_numeric() {
+            k -= 1;
+          }
+          let start = k;
+          while k < content_lines[i - 1].len() - 1 && content_lines[i - 1][k + 1].is_numeric() {
+            n += content_lines[i - 1][k + 1];
+            k += 1;
+          }
+          if k != j && !used_coords.contains([i - 1, start + 1]) {
+            part_one_sum += n.to_int();
+            used_coords.append([i - 1, start + 1]);
+            if line[j] == '*' {
+              values.append(n.to_int());
+            }
+          }
+        }
+
+        if i < content_lines.len() - 1 {
+          // Down-right
+          let k = j;
+          let n = "";
+          while k > 0 && content_lines[i + 1][k].is_numeric() {
+            k -= 1;
+          }
+          let start = k;
+          while k < content_lines[i + 1].len() - 1 && content_lines[i + 1][k + 1].is_numeric() {
+            n += content_lines[i + 1][k + 1];
+            k += 1;
+          }
+          if k != j && !used_coords.contains([i + 1, start + 1]) {
+            part_one_sum += n.to_int();
+            used_coords.append([i + 1, start + 1]);
+            if line[j] == '*' {
+              values.append(n.to_int());
+            }
+          }
+        }
+      }
+
+      if i > 0 {
+        // Up
+        if content_lines[i - 1][j].is_numeric() {
+          if j == 0 || !content_lines[i - 1][j - 1].is_numeric() {
+            if j == line.len() - 1 || !content_lines[i - 1][j + 1].is_numeric() {
+              part_one_sum += content_lines[i - 1][j].to_int();
+              used_coords.append([i - 1, j]);
+              if line[j] == '*' {
+                values.append(content_lines[i - 1][j].to_int());
+              }
+            }
+          }
+        }
+      }
+
+      if i < content_lines.len() - 1 {
+        // Down
+        if content_lines[i + 1][j].is_numeric() {
+          if j == 0 || !content_lines[i + 1][j - 1].is_numeric() {
+            if j == line.len() - 1 || !content_lines[i + 1][j + 1].is_numeric() {
+              part_one_sum += content_lines[i + 1][j].to_int();
+              used_coords.append([i + 1, j]);
+              if line[j] == '*' {
+                values.append(content_lines[i + 1][j].to_int());
+              }
+            }
+          }
+        }
+      }
+
+      if values.len() == 2 {
+        part_two_sum += values[0] * values[1];
+      }
+    }
+  }
+}
+print("Part One: " + part_one_sum);
+print("Part Two: " + part_two_sum);
