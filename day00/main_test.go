@@ -6,15 +6,11 @@ import (
 	"testing"
 )
 
-//go:embed example01.dat
-var exampleOne string
-
-//go:embed example02.dat
-var exampleTwo string
+//go:embed example.dat
+var example string
 
 func init() {
-	exampleOne = strings.TrimRight(exampleOne, "\n")
-	exampleTwo = strings.TrimRight(exampleTwo, "\n")
+	example = strings.TrimRight(example, "\n")
 }
 
 func Test_part1(t *testing.T) {
@@ -25,14 +21,9 @@ func Test_part1(t *testing.T) {
 	}{
 		{
 			name:  "example",
-			input: exampleOne,
+			input: example,
 			want:  0,
 		},
-		// {
-		// 	name:  "actual",
-		// 	input: input,
-		// 	want:  0,
-		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -51,14 +42,9 @@ func Test_part2(t *testing.T) {
 	}{
 		{
 			name:  "example",
-			input: exampleTwo,
+			input: example,
 			want:  0,
 		},
-		// {
-		// 	name:  "actual",
-		// 	input: input,
-		// 	want:  0,
-		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
