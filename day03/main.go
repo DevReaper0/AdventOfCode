@@ -25,107 +25,37 @@ func part2(input string) int {
 func getSum(input string, handleDisabling bool) int {
 	sum := 0
 
-	first := ""
-	second := ""
-	state := ""
 	enabled := true
-	for _, c := range input {
-		if state == "" && c == 'm' {
-			state = "m"
-		} else if state == "m" {
-			if c == 'u' {
-				state = "mu"
-			} else {
-				state = ""
-			}
-		} else if state == "mu" {
-			if c == 'l' {
-				state = "mul"
-			} else {
-				state = ""
-			}
-		} else if state == "mul" {
-			if c == '(' {
-				state = "mul("
-			} else {
-				state = ""
-			}
-		} else if state == "mul(" {
-			if c >= '0' && c <= '9' {
-				first += string(c)
-			} else if c == ',' {
-				state = ","
-			} else {
-				first = ""
-				state = ""
-			}
-		} else if state == "," {
-			if c >= '0' && c <= '9' {
-				second += string(c)
-			} else if c == ')' {
-				state = ")"
-			} else {
-				first = ""
-				second = ""
-				state = ""
-			}
-		} else if handleDisabling {
-			if c == 'd' {
-				state = "d"
-			} else if state == "d" {
-				if c == 'o' {
-					state = "do"
-				} else {
-					state = ""
-				}
-			} else if state == "do" {
-				if c == '(' {
-					state = "do("
-				} else if c == 'n' {
-					state = "don"
-				} else {
-					state = ""
-				}
-			} else if state == "do(" {
-				if c == ')' {
-					enabled = true
-				}
-				state = ""
-			} else if state == "don" {
-				if c == '\'' {
-					state = "don'"
-				} else {
-					state = ""
-				}
-			} else if state == "don'" {
-				if c == 't' {
-					state = "don't"
-				} else {
-					state = ""
-				}
-			} else if state == "don't" {
-				if c == '(' {
-					state = "don't("
-				} else {
-					state = ""
-				}
-			} else if state == "don't(" {
-				if c == ')' {
-					enabled = false
-				}
-				state = ""
-			}
-		}
+	for i := 0; i < len(input); i++ {
+		if handleDisabling && input[i] == 'd' && i < len(input)-3 && input[i+1] == 'o' && input[i+2] == '(' && input[i+3] == ')' {
+			i += 3
+			enabled = true
+		} else if handleDisabling && input[i] == 'd' && i < len(input)-6 && input[i+1] == 'o' && input[i+2] == 'n' && input[i+3] == '\'' && input[i+4] == 't' && input[i+5] == '(' && input[i+6] == ')' {
+			i += 6
+			enabled = false
+		} else if input[i] == 'm' && i < len(input)-3 && input[i+1] == 'u' && input[i+2] == 'l' && input[i+3] == '(' {
+			i += 4
 
-		if state == ")" {
-			if enabled && first != "" && second != "" {
+			first := ""
+			second := ""
+
+			for input[i] >= '0' && input[i] <= '9' {
+				first += string(input[i])
+				i++
+			}
+			if input[i] == ',' {
+				i++
+			}
+			for input[i] >= '0' && input[i] <= '9' {
+				second += string(input[i])
+				i++
+			}
+
+			if enabled && first != "" && second != "" && input[i] == ')' {
 				firstNum := cast.ToInt(first)
 				secondNum := cast.ToInt(second)
 				sum += firstNum * secondNum
 			}
-			first = ""
-			second = ""
-			state = ""
 		}
 	}
 
